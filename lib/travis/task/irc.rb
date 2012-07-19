@@ -66,6 +66,7 @@ module Travis
 
         def client(host, nick, options, &block)
           Client.new(host, nick, options).tap do |client|
+            client.wait_for_numeric
             client.run(&block) if block_given?
             client.quit
           end
