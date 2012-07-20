@@ -75,40 +75,6 @@ describe Travis::Task::Irc::Client do
     end
   end
 
-  describe 'should define @numeric_received' do
-    before do
-      @socket = mock
-      TCPSocket.stubs(:open).returns @socket
-    end
-
-    def expect_standard_sequence
-      @socket.expects(:puts).with("NICK #{nick}")
-      @socket.expects(:puts).with("USER #{nick} #{nick} #{nick} :#{nick}")
-    end
-
-    def expect_numeric_sequence
-      expect_standard_sequence
-      @socket.stubs(:gets).returns(":fake-server 001 fake-nick :fake-message").then.returns ""
-    end
-
-    describe 'to a non-true value' do
-      it 'before receiving a numeric' do
-        expect_standard_sequence
-        client = Travis::Task::Irc::Client.new(server, nick)
-        client.numeric_received.should_not be_true
-      end
-    end
-
-    describe 'to true' do
-      it 'after receiving a numeric' do
-        expect_numeric_sequence
-        client = Travis::Task::Irc::Client.new(server, nick)
-        sleep 0.5
-        client.numeric_received.should be_true
-      end
-    end
-  end
-
   describe 'with connection established' do
     let(:socket) { stub(:puts => true) }
     let(:channel_key) { 'mykey' }
