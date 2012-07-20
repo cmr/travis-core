@@ -94,7 +94,7 @@ describe Travis::Task::Irc::Client do
     describe 'to a non-true value' do
       it 'before receiving a numeric' do
         expect_standard_sequence
-        client = IrcClient.new(server, nick)
+        client = Travis::Task::Irc::Client.new(server, nick)
         client.numeric_received.should_not be_true
       end
     end
@@ -102,7 +102,7 @@ describe Travis::Task::Irc::Client do
     describe 'to true' do
       it 'after receiving a numeric' do
         expect_numeric_sequence
-        client = IrcClient.new(server, nick)
+        client = Travis::Task::Irc::Client.new(server, nick)
         sleep 0.5
         client.numeric_received.should be_true
       end

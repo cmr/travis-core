@@ -16,21 +16,25 @@ module Travis
       class Client
         attr_accessor :channel, :socket, :ping_thread, :numeric_received
 
-        def self.wrap_ssl(socket)
-          ssl_context = OpenSSL::SSL::SSLContext.new
-          ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE # XXX
-          OpenSSL::SSL::SSLSocket.new(socket, ssl_context).tap do |sock|
-            sock.sync = true
-            sock.connect
+        @test_mode = false
+        class << self
+          attr_accessor :test_mode
+          def wrap_ssl(socket)
+            ssl_context = OpenSSL::SSL::SSLContext.new
+            ssl_context.verify_mode = OpenSSL::SSL::VERIFY_NONE # XXX
+            OpenSSL::SSL::SSLSocket.new(socket, ssl_context).tap do |sock|
+              sock.sync = true
+              sock.connect
+            end
           end
         end
 
-        def initialize(server, nick, options = {}, skip_numeric = false)
+        def initialize(server, nick, options = {})
           @socket = TCPSocket.open(server, options[:port] || 6667)
           @socket = self.class.wrap_ssl(@socket) if options[:ssl]
 
           @ping_thread = start_ping_thread
-          @numeric_received = skip_numeric
+          @numeric_received = self.class.test_mode
 
           socket.puts "PASS #{options[:password]}" if options[:password]
           socket.puts "NICK #{nick}"

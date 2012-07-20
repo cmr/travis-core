@@ -22,7 +22,8 @@ describe Travis::Task::Irc do
 
   def run(build, channels = nil)
     data = Travis::Api.data(build, :for => 'event', :version => 'v2')
-    Travis::Task.run(:irc, data, {:channels => channels || self.channels}, true)
+    Travis::Task::Irc::Client.test_mode = true
+    Travis::Task.run(:irc, data, :channels => channels || self.channels)
   end
 
   let(:simple_irc_notfication_messages) do
